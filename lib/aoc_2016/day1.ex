@@ -1,5 +1,11 @@
 defmodule Aoc2016.Day1 do
 
+  def calc_hq(input) do
+    {:ok, pid} = Aoc2016.Day1GenServer.start_link()
+    for n <- parse(input), do: Aoc2016.Day1GenServer.calc(pid, n)
+    Aoc2016.Day1GenServer.get_history(pid)
+  end
+
   def calc(input) do
     {:ok, pid} = Aoc2016.Day1GenServer.start_link()
     for n <- parse(input), do: Aoc2016.Day1GenServer.calc(pid, n)

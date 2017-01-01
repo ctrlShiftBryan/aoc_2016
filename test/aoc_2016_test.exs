@@ -17,4 +17,31 @@ defmodule Aoc2016Test do
     """
     assert Aoc2016.Day1.calc(input) == 298
   end
+
+  test "history - first visit" do
+    history = %{{1,1} => 1}
+
+    new_history = %{{1,1} => 1, {2,1} => 1}
+    assert Aoc2016.Day1GenServer.update_history(history, {2, 1}) == new_history
+  end
+
+  test "history - 2nd visit" do
+    history = %{{1,1} => 1, {2,1} => 1}
+
+    new_history = %{{1,1} => 1, {2,1} => 1, :found_it => {:hq, 1, 1}}
+    assert Aoc2016.Day1GenServer.update_history(history, {1, 1}) == new_history
+  end
+
+  test "history - 2nd visit after found ignored" do
+    history = %{{1,1} => 1, {2,1} => 1, :found_it => {:hq, 1, 1}}
+
+    new_history = %{{1,1} => 1, {2,1} => 1, :found_it => {:hq, 1, 1}}
+    assert Aoc2016.Day1GenServer.update_history(history, {2, 1}) == new_history
+  end
+
+  @tag :wip
+  test "find hq - example 1" do
+    input = "R8, R4, R4, R8"
+    assert Aoc2016.Day1.calc_hq(input) == 5
+  end
 end

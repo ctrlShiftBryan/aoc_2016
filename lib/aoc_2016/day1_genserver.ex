@@ -14,9 +14,21 @@ defmodule Aoc2016.Day1GenServer do
     GenServer.call(pid, {:read})
   end
 
+  def get_history(pid) do
+    GenServer.call(pid, {:read_history})
+  end
+
   # Server (callbacks)
   def handle_call({:read}, _from, state) do
     {:reply, state, state}
+  end
+
+  def handle_call({:read_history}, _from, {facing, x, y, history} = state) do
+    with {:ok, x, y} <- history[:found_it] do
+      {:reply, {x, y}, state}
+    else
+      nil -> {:reply, :notfound, state}
+    end
   end
 
   def handle_call({:calc, {direction, distance}}, _from, {facing, x, y, history})do
@@ -27,9 +39,26 @@ defmodule Aoc2016.Day1GenServer do
                      |> transition(direction)
                      |> move(distance, current_location)
 
-    new_state = {facing, x, y, history}
+    new_history = update_history(history, {x, y})
+
+    new_state = {facing, x, y, new_history}
 
     {:reply, new_state, new_state}
+  end
+
+  def update_history(history, {x, y}) do
+    IO.inspect {history, x, y}
+    with nil <- history[:found_it],
+         nil <- history[{x, y}]
+    do
+      # add it for the first time
+      history |> Map.merge(%{{x, y} => 1})
+    else
+      # stop tracking we already found it
+      {:hq, x, y} ->  history
+      # not nil so already in map once, found it
+      _ -> history |> Map.merge(%{:found_it => {:hq, x, y}})
+    end
   end
 
   defp move(:north, m, {x , y}), do: {:north, x + m, y}
