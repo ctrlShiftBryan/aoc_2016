@@ -3,7 +3,7 @@ defmodule Aoc2016.Day1 do
   def calc(input) do
     {:ok, pid} = Aoc2016.Day1GenServer.start_link()
     for n <- parse(input), do: Aoc2016.Day1GenServer.calc(pid, n)
-    { _, x ,y} = Aoc2016.Day1GenServer.get(pid)
+    { _, x ,y, _} = Aoc2016.Day1GenServer.get(pid)
     Kernel.abs(x) + Kernel.abs(y)
   end
 

@@ -3,7 +3,7 @@ defmodule Aoc2016.Day1GenServer do
 
   def start_link() do
     # initial state facing north at 0, 0
-    GenServer.start_link(__MODULE__, {:north, 0,0})
+    GenServer.start_link(__MODULE__, {:north, 0,0, %{}})
   end
 
   def calc(pid, move) do
@@ -19,13 +19,15 @@ defmodule Aoc2016.Day1GenServer do
     {:reply, state, state}
   end
 
-  def handle_call({:calc, {direction, distance}}, _from, {facing, x, y})do
+  def handle_call({:calc, {direction, distance}}, _from, {facing, x, y, history})do
 
     current_location = {x, y}
 
-    new_state  = facing
-                 |> transition(direction)
-                 |> move(distance, current_location)
+    {facing, x, y} = facing
+                     |> transition(direction)
+                     |> move(distance, current_location)
+
+    new_state = {facing, x, y, history}
 
     {:reply, new_state, new_state}
   end
