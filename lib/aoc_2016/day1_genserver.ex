@@ -10,21 +10,30 @@ defmodule Aoc2016.Day1GenServer do
     GenServer.call(pid, {:calc, move})
   end
 
+  def get(pid) do
+    GenServer.call(pid, {:read})
+  end
+
   # Server (callbacks)
+  def handle_call({:read}, _from, state) do
+    {:reply, state, state}
+  end
 
-  def handle_call({:calc, {direction, distance}}, _from, {facing, x, y}) do
+  def handle_call({:calc, {direction, distance}}, _from, {facing, x, y})do
 
-    new_state = facing |>  
-                transition(direction) |> 
-                move(distance, {x, y})
+    current_location = {x, y}
+
+    new_state  = facing
+                 |> transition(direction)
+                 |> move(distance, current_location)
 
     {:reply, new_state, new_state}
   end
 
-  defp move(:north, m, {x , y}), do: {:north, x, y + m}
-  defp move(:south, m, {x , y}), do: {:south, x, y - m}
-  defp move(:east, m, {x , y}), do: {:east, x + m, y}
-  defp move(:west, m, {x , y}), do: {:west, x - m, y}
+  defp move(:north, m, {x , y}), do: {:north, x + m, y}
+  defp move(:south, m, {x , y}), do: {:south, x - m, y}
+  defp move(:east, m, {x , y}), do: {:east, x, y + m}
+  defp move(:west, m, {x , y}), do: {:west, x, y - m}
 
   defp transition(:north, :left), do: :west
   defp transition(:north, :right), do: :east
